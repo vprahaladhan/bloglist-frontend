@@ -4,17 +4,20 @@ import loginService from './services/login'
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Login from './components/Login'
+import Notification from './components/Notification'
 
 function App() {
-  const [blogs, setBlogs] = useState([])
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setURL] = useState('')
-  const [user, setUser] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [errorMsg, setErrorMsg] = useState('')
-
+  const [ blogs, setBlogs ] = useState([])
+  const [ title, setTitle ] = useState('')
+  const [ author, setAuthor ] = useState('')
+  const [ url, setURL ] = useState('')
+  const [ user, setUser ] = useState(null)
+  const [ username, setUsername ] = useState('')
+  const [ password, setPassword ] = useState('')
+  const [ errorMsg, setErrorMsg ] = useState('')
+  const [ message, setMessage ] = useState(null)
+  const [ msgColor, setMsgColor ] = useState(null)
+  
   // useEffect(() => {
   //   blogsService
   //   .getAll()
@@ -68,8 +71,7 @@ function App() {
           setUser(response)
         }
         else {
-          setErrorMsg(response.error)
-          setTimeout(() => setErrorMsg(null), 5000)  
+          displayMessage(response.error, 'red')
         }
       })
   }
@@ -95,9 +97,12 @@ function App() {
       .addBlog(blog, `bearer ${user.token}`)
       .then(response => {
           if (response.hasOwnProperty('error')) {
-            setErrorMsg(response.error)
-            setTimeout(() => setErrorMsg(null), 5000)  
-        }
+            displayMessage(response.error, 'red')
+          }
+          else {
+            const msg = `a new blog ${response.title} by ${response.author} has been added`
+            displayMessage(msg, 'green')
+          }
       })
     // setBlogs(blogs.concat(newBlog))
   }
@@ -113,25 +118,35 @@ function App() {
     setPassword('')
   }
 
+  const displayMessage = (msg, color) => {
+    setMessage(msg)
+    setMsgColor(color)
+    setTimeout(() => setMessage(null), 5000) 
+  }
+  
   const blog = {title, author, url}
 
   return (
     <div className="App">
-      <h1>Blogs</h1>
       {!window.localStorage.getItem('user') ? 
-        <Login username={username} password={password} onChange={onChange} onSubmit={handleLogin} /> :
-        <>
+        <div>
+          <h1>Log in to App</h1>
+          {message ? <Notification message={message} msgColor={msgColor} /> : <></>}
+          <Login username={username} password={password} onChange={onChange} onSubmit={handleLogin} />
+        </div> :
+        <div>
+          <h1>Blogs</h1>
+          {message ? <Notification message={message} msgColor={msgColor} /> : <></>}
           <p>
             User {JSON.parse(window.localStorage.getItem('user')).name} logged in
             <button onClick={handleLogout}>Logout</button>
           </p>
-          <p><h1>Create New Blog</h1></p>
+          <h1><p>Create New Blog</p></h1>
           <CreateBlog blog={blog} onChange={onChange} onClick={onClick}/>
           <ul style={{listStyle: 'none', paddingLeft: 0}}>{showAllBlogs()}</ul>
           <p>Total blogs: {blogs.length}</p>
-        </>
+        </div>
       }
-      <p>{errorMsg ? errorMsg : ''}</p>
     </div>
   )
 }
