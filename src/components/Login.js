@@ -4,9 +4,9 @@ const Login = ({username, password, onSubmit, onChange}) => {
     return (
         <div>
             <form name="login-form" onSubmit={onSubmit}> 
-                Username: <input name='username' value={username} onChange={onChange}/><br/>
-                Password: <input name='password' value={password} onChange={onChange} type="password"/><br/>
-                <button type="submit">Submit</button>
+                <div>Username: <input name='username' value={username} onChange={onChange}/></div>
+                <div>Password: <input name='password' value={password} onChange={onChange} type="password"/></div>
+                <div><button type="submit">Submit</button></div>
             </form>
         </div>
     )

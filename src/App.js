@@ -14,9 +14,9 @@ function App() {
   const [ user, setUser ] = useState(null)
   const [ username, setUsername ] = useState('')
   const [ password, setPassword ] = useState('')
-  const [ errorMsg, setErrorMsg ] = useState('')
   const [ message, setMessage ] = useState(null)
   const [ msgColor, setMsgColor ] = useState(null)
+  const [ visible, setVisible ] = useState(true)
   
   // useEffect(() => {
   //   blogsService
@@ -107,6 +107,10 @@ function App() {
     // setBlogs(blogs.concat(newBlog))
   }
 
+  const showOrHideForm = () => {
+    setVisible(!visible)
+  }
+
   const clearBlogInputFields = () => {
     setTitle('')
     setAuthor('')
@@ -123,6 +127,8 @@ function App() {
     setMsgColor(color)
     setTimeout(() => setMessage(null), 5000) 
   }
+  
+  const setVisibility = visibility => visibility ? '' : 'none'
   
   const blog = {title, author, url}
 
@@ -141,10 +147,17 @@ function App() {
             User {JSON.parse(window.localStorage.getItem('user')).name} logged in
             <button onClick={handleLogout}>Logout</button>
           </p>
-          <h1><p>Create New Blog</p></h1>
-          <CreateBlog blog={blog} onChange={onChange} onClick={onClick}/>
-          <ul style={{listStyle: 'none', paddingLeft: 0}}>{showAllBlogs()}</ul>
-          <p>Total blogs: {blogs.length}</p>
+          <div style={{display: setVisibility(visible)}}>
+            <button name='show-form' onClick={showOrHideForm}>Show Form</button>
+          </div>
+          <div style={{display: setVisibility(!visible)}}>
+            <h1><p>Create New Blog</p></h1>
+            <CreateBlog blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm}/>
+          </div>
+          <div>
+            <ul style={{listStyle: 'none', paddingLeft: 0}}>{showAllBlogs()}</ul>
+            <p>Total blogs: {blogs.length}</p>
+          </div>
         </div>
       }
     </div>
