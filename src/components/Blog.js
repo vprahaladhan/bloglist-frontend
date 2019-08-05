@@ -3,6 +3,7 @@ import blogService from '../services/blogs'
 
 let Blog = ({ blog }) => {
   const [ showDetailedBlog, setShowDetailedBlog ] = useState(false)
+  const [ updatedBlog, setUpdatedBlog] = useState(blog)
 
   const blogStyle = {
     paddingTop: 5,
@@ -12,22 +13,35 @@ let Blog = ({ blog }) => {
     marginBottom: 5
   }
 
+  const incrementLikes = () => {
+    blogService.likeBlog(blog).then(response => {
+      console.log('Response is ', response)
+      setUpdatedBlog(response)
+    })
+  }
+
   const showBlogDetails = () => {
     return (
       <div>
-        <div>{blog.title}</div>
-        <div>{blog.url}</div>
-        <div>
-          {blog.likes} likes&nbsp;&nbsp;
-          <button>like</button>
+        <div onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
+          {updatedBlog.title}
         </div>
-        <div>{blog.user ? `added by ${blog.user.name}` : ''}</div>
+        <div>{updatedBlog.url}</div>
+        <div>
+          {updatedBlog.likes} likes&nbsp;&nbsp;
+          <button onClick={incrementLikes}>like</button>
+        </div>
+        <div>{updatedBlog.user ? `added by ${updatedBlog.user.name}` : ''}</div>
       </div>)
   }
 
   return (
-    <div style={blogStyle} onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
-      {showDetailedBlog ?  showBlogDetails() : `${blog.title} - ${blog.author}`}
+    <div style={blogStyle}>
+      {showDetailedBlog ?  
+        showBlogDetails() : <div onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
+                              {updatedBlog.title} - {updatedBlog.author}
+                            </div>
+      }
     </div>
   )
 }

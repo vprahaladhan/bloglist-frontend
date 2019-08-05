@@ -28,11 +28,30 @@ const addBlog = (newBlog, token) => {
 }
 
 const likeBlog = (blog) => {
-  blog.likes += 1
-  axios
-    .put(`${baseUrl}/${blog.id}`, blog)
-    .then(response => response.data)
-    .error(error => error.response.data)
+  const blogToUpdate = {
+    id: blog.id,
+    title: blog.title,
+    author: blog.author,
+    url: blog.url,
+    likes: blog.likes + 1,
+    user: blog.user.id
+  }
+
+  return axios
+          .put(`${baseUrl}/${blogToUpdate.id}`, blogToUpdate)
+          .then(response => response.data)
+          .catch(error => {
+            console.log(`Error in likeBlog of blogs.js ${error.response.data}`)
+            return error.response.data
+          })
 }
 
-export default { getAll, addBlog, likeBlog }
+const getBlog = (id) => {
+  console.log(`ID is ${id}`) 
+  return axios
+          .get(`${baseUrl}/${id}`)
+          .then(response => response.data)
+          .catch(error => error.response.data)
+} 
+
+export default { getAll, addBlog, likeBlog, getBlog }
