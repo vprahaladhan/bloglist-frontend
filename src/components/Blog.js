@@ -14,10 +14,7 @@ let Blog = ({ blog }) => {
   }
 
   const incrementLikes = () => {
-    blogService.likeBlog(blog).then(response => {
-      console.log('Response is ', response)
-      setUpdatedBlog(response)
-    })
+    blogService.likeBlog(blog).then(response => setUpdatedBlog(response))
   }
 
   const showBlogDetails = () => {
