@@ -33,17 +33,17 @@ let Blog = ({ blog, user }) => {
           <button onClick={incrementLikes}>like</button>
         </div>
         <div>{updatedBlog.user ? `added by ${updatedBlog.user.name}` : ''}</div>
-        {user.username === updatedBlog.user.username ? 
+        {user.username === updatedBlog.user.username ?
           <button onClick={deleteBlog}>remove</button> : ''}
       </div>)
   }
 
   return (
     <div style={blogStyle}>
-      {showDetailedBlog ?  
+      {showDetailedBlog ?
         showBlogDetails() : <div onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
-                              {updatedBlog.title} - {updatedBlog.author}
-                            </div>
+          {updatedBlog.title} - {updatedBlog.author}
+        </div>
       }
     </div>
   )

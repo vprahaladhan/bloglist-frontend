@@ -3,7 +3,7 @@ import axios from 'axios'
 const baseUrl = 'http://localhost:3003/api/login'
 
 const login = (user) => {
-  // let resp 
+  // let resp
   // try {
   // return (await axios.post(baseUrl, user)).data
   //   return resp.data
@@ -17,9 +17,8 @@ const login = (user) => {
     .post(baseUrl, user)
     .then( response => response.data )
     .catch( error => {
-      console.log(`Error in login.js`, error.response.data)
-      return error.response.data 
-   })
+      console.log('Error in login.js', error.response.data)
+      return error.response.data})
 }
 
-export default {login}
+export default { login }

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Login from './components/Login'
 import Notification from './components/Notification'
+import PropTypes from 'prop-types'
 
 function App() {
   const [ blogs, setBlogs ] = useState([])
@@ -17,7 +18,7 @@ function App() {
   const [ message, setMessage ] = useState(null)
   const [ msgColor, setMsgColor ] = useState(null)
   const [ visible, setVisible ] = useState(true)
-  
+
   // useEffect(() => {
   //   blogService
   //   .getAll()
@@ -25,24 +26,24 @@ function App() {
 
   const showAllBlogs = () => {
     blogService
-    .getAll()
-    .then(result => setBlogs(result.sort((blog1, blog2) => blog2.likes - blog1.likes)))
+      .getAll()
+      .then(result => setBlogs(result.sort((blog1, blog2) => blog2.likes - blog1.likes)))
     return blogs.map(blog => <li key={blog.id}><Blog blog={blog} user={user}/></li>)
   }
 
   const onChange = (event) => {
     switch(event.target.name) {
-      case 'title'    : setTitle(event.target.value)
-                        break
-      case 'author'   : setAuthor(event.target.value)
-                        break
-      case 'url'      : setURL(event.target.value)
-                        break
-      case 'username' : setUsername(event.target.value)
-                        break
-      case 'password' : setPassword(event.target.value)
-                        break
-      default         :
+    case 'title'    : setTitle(event.target.value)
+      break
+    case 'author'   : setAuthor(event.target.value)
+      break
+    case 'url'      : setURL(event.target.value)
+      break
+    case 'username' : setUsername(event.target.value)
+      break
+    case 'password' : setPassword(event.target.value)
+      break
+    default         :
     }
   }
 
@@ -63,7 +64,7 @@ function App() {
   const handleLogin = (event) => {
     event.preventDefault()
     loginService
-      .login({username, password})
+      .login({ username, password })
       .then(response => {
         if (!response.hasOwnProperty('error')) {
           window.localStorage.setItem('user', JSON.stringify(response))
@@ -75,7 +76,7 @@ function App() {
         }
       })
   }
-      
+
   const handleLogout = (event) => {
     window.localStorage.removeItem('user')
     setUser(null)
@@ -84,25 +85,25 @@ function App() {
   // const onClick = async (event) => {
   //   const blog = { title, author, url }
   //   clearBlogInputFields()
-  //   // const newBlog = 
+  //   // const newBlog =
   //   await blogService.addBlog(blog, `bearer ${user.token}`)
   //   // setBlogs(blogs.concat(newBlog))
   // }
 
-  const onClick = (event) => {
+  const onClick = () => {
     const blog = { title, author, url }
     clearBlogInputFields()
-    // const newBlog = 
+    // const newBlog =
     blogService
       .addBlog(blog, `bearer ${user.token}`)
       .then(response => {
-          if (response.hasOwnProperty('error')) {
-            displayMessage(response.error, 'red')
-          }
-          else {
-            const msg = `a new blog ${response.title} by ${response.author} has been added`
-            displayMessage(msg, 'green')
-          }
+        if (response.hasOwnProperty('error')) {
+          displayMessage(response.error, 'red')
+        }
+        else {
+          const msg = `a new blog ${response.title} by ${response.author} has been added`
+          displayMessage(msg, 'green')
+        }
       })
     // setBlogs(blogs.concat(newBlog))
   }
@@ -125,16 +126,16 @@ function App() {
   const displayMessage = (msg, color) => {
     setMessage(msg)
     setMsgColor(color)
-    setTimeout(() => setMessage(null), 5000) 
+    setTimeout(() => setMessage(null), 5000)
   }
-  
+
   const setVisibility = visibility => visibility ? '' : 'none'
-  
-  const blog = {title, author, url}
+
+  const blog = { title, author, url }
 
   return (
     <div className="App">
-      {!window.localStorage.getItem('user') ? 
+      {!window.localStorage.getItem('user') ?
         <div>
           <h1>Log in to App</h1>
           {message ? <Notification message={message} msgColor={msgColor} /> : <></>}
@@ -147,21 +148,28 @@ function App() {
             User {JSON.parse(window.localStorage.getItem('user')).name} logged in
             <button onClick={handleLogout}>Logout</button>
           </p>
-          <div style={{display: setVisibility(visible)}}>
+          <div style={{ display: setVisibility(visible) }}>
             <button name='show-form' onClick={showOrHideForm}>Show Form</button>
           </div>
-          <div style={{display: setVisibility(!visible)}}>
+          <div style={{ display: setVisibility(!visible) }}>
             <h1><p>Create New Blog</p></h1>
             <CreateBlog blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm}/>
           </div>
           <div>
-            <ul style={{listStyle: 'none', paddingLeft: 0}}>{showAllBlogs()}</ul>
+            <ul style={{ listStyle: 'none', paddingLeft: 0 }}>{showAllBlogs()}</ul>
             <p>Total blogs: {blogs.length}</p>
           </div>
         </div>
       }
     </div>
   )
+}
+
+CreateBlog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
+  showOrHideForm: PropTypes.func.isRequired
 }
 
 export default App
