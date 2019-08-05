@@ -46,12 +46,24 @@ const likeBlog = (blog) => {
           })
 }
 
-const getBlog = (id) => {
-  console.log(`ID is ${id}`) 
+const getBlog = (blog) => {
   return axios
-          .get(`${baseUrl}/${id}`)
+          .get(`${baseUrl}/${blog.id}`)
           .then(response => response.data)
           .catch(error => error.response.data)
 } 
 
-export default { getAll, addBlog, likeBlog, getBlog }
+const removeBlog = (blog, user) => {
+  const config = {
+    headers: { Authorization: `bearer ${user.token}` }
+  }
+  if (window.confirm('do you really want to delete the blog?')) { 
+    console.log('About to remove blog!!!')
+    return axios
+          .delete(`${baseUrl}/${blog.id}`, config)
+          .then(response => response.data)
+          .catch(error => error.response.data)
+  }
+} 
+
+export default { getAll, addBlog, likeBlog, getBlog, removeBlog }
