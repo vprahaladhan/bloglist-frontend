@@ -26,7 +26,7 @@ function App() {
   const showAllBlogs = () => {
     blogService
     .getAll()
-    .then(result => setBlogs(result))
+    .then(result => setBlogs(result.sort((blog1, blog2) => blog2.likes - blog1.likes)))
     return blogs.map(blog => <li key={blog.id}><Blog blog={blog} /></li>)
   }
 
