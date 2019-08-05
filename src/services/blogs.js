@@ -1,4 +1,5 @@
 import axios from 'axios'
+
 const baseUrl = 'http://localhost:3003/api/blogs'
 
 const getAll = () => {
@@ -26,4 +27,12 @@ const addBlog = (newBlog, token) => {
           }) 
 }
 
-export default { getAll, addBlog }
+const likeBlog = (blog) => {
+  blog.likes += 1
+  axios
+    .put(`${baseUrl}/${blog.id}`, blog)
+    .then(response => response.data)
+    .error(error => error.response.data)
+}
+
+export default { getAll, addBlog, likeBlog }

@@ -1,4 +1,5 @@
 import axios from 'axios'
+
 const baseUrl = 'http://localhost:3003/api/login'
 
 const login = (user) => {
@@ -11,7 +12,7 @@ const login = (user) => {
   //   console.log(`Error in login: ${error.resp.data}`)
   //   throw new Error(error)
   // }
-
+  console.log(`URL: ${baseUrl}`)
   return axios
     .post(baseUrl, user)
     .then( response => response.data )

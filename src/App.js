@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import blogsService from './services/blogs'
+import blogService from './services/blogs'
 import loginService from './services/login'
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
@@ -19,15 +19,15 @@ function App() {
   const [ visible, setVisible ] = useState(true)
   
   // useEffect(() => {
-  //   blogsService
+  //   blogService
   //   .getAll()
   //   .then(result => setBlogs(result))}, [])
 
   const showAllBlogs = () => {
-    blogsService
+    blogService
     .getAll()
     .then(result => setBlogs(result))
-    return blogs.map(blog => <li key={blog.id}><Blog blog={blog}/></li>)
+    return blogs.map(blog => <li key={blog.id}><Blog blog={blog} /></li>)
   }
 
   const onChange = (event) => {
@@ -85,7 +85,7 @@ function App() {
   //   const blog = { title, author, url }
   //   clearBlogInputFields()
   //   // const newBlog = 
-  //   await blogsService.addBlog(blog, `bearer ${user.token}`)
+  //   await blogService.addBlog(blog, `bearer ${user.token}`)
   //   // setBlogs(blogs.concat(newBlog))
   // }
 
@@ -93,7 +93,7 @@ function App() {
     const blog = { title, author, url }
     clearBlogInputFields()
     // const newBlog = 
-    blogsService
+    blogService
       .addBlog(blog, `bearer ${user.token}`)
       .then(response => {
           if (response.hasOwnProperty('error')) {
