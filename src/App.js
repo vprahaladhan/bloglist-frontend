@@ -13,8 +13,6 @@ function App() {
   const [ author, setAuthor ] = useState('')
   const [ url, setURL ] = useState('')
   const [ user, setUser ] = useState(null)
-  const [ username, setUsername ] = useState('')
-  const [ password, setPassword ] = useState('')
   const [ message, setMessage ] = useState(null)
   const [ msgColor, setMsgColor ] = useState(null)
   const [ visible, setVisible ] = useState(true)
@@ -41,10 +39,6 @@ function App() {
       break
     case 'url'      : setURL(event.target.value)
       break
-    case 'username' : setUsername(event.target.value)
-      break
-    case 'password' : setPassword(event.target.value)
-      break
     default         :
     }
   }
@@ -62,23 +56,6 @@ function App() {
   //     setTimeout(() => setErrorMsg(null), 5000)
   //   }
   // }
-
-  const handleLogin = (event) => {
-    event.preventDefault()
-    loginService
-      .login({ username, password })
-      .then(response => {
-        if (!response.hasOwnProperty('error')) {
-          window.localStorage.setItem('user', JSON.stringify(response))
-          console.log(window.localStorage.getItem('user'))
-          clearLoginInputFields()
-          setUser(response)
-        }
-        else {
-          displayMessage(response.error, 'red')
-        }
-      })
-  }
 
   const handleLogout = () => {
     window.localStorage.removeItem('user')
@@ -121,11 +98,6 @@ function App() {
     setURL('')
   }
 
-  const clearLoginInputFields = () => {
-    setUsername('')
-    setPassword('')
-  }
-
   const displayMessage = (msg, color) => {
     setMessage(msg)
     setMsgColor(color)
@@ -142,7 +114,7 @@ function App() {
         <div>
           <h1>Log in to App</h1>
           {message ? <Notification message={message} msgColor={msgColor} /> : <></>}
-          <Login username={username} password={password} onChange={onChange} onSubmit={handleLogin} />
+          <Login displayMessage={displayMessage} setUser={(response) => setUser(response)}/>
         </div> :
         <div>
           <h1>Blogs</h1>
