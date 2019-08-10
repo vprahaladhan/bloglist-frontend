@@ -25,10 +25,12 @@ function App() {
   //   .then(result => setBlogs(result))}, [])
 
   const showAllBlogs = () => {
+    console.log('In showAllBlogs of App...')
     blogService
       .getAll()
       .then(result => setBlogs(result.sort((blog1, blog2) => blog2.likes - blog1.likes)))
-    return blogs.map(blog => <li key={blog.id}><Blog blog={blog} user={user}/></li>)
+      .catch(error => console.log(`Error in getting all blogs! ${error}`))
+    return blogs.map(blog => <li key={blog.id}><Blog blog={blog} user={user} className={'blog'}/></li>)
   }
 
   const onChange = (event) => {
@@ -68,6 +70,7 @@ function App() {
       .then(response => {
         if (!response.hasOwnProperty('error')) {
           window.localStorage.setItem('user', JSON.stringify(response))
+          console.log(window.localStorage.getItem('user'))
           clearLoginInputFields()
           setUser(response)
         }
@@ -77,7 +80,7 @@ function App() {
       })
   }
 
-  const handleLogout = (event) => {
+  const handleLogout = () => {
     window.localStorage.removeItem('user')
     setUser(null)
   }
@@ -156,7 +159,7 @@ function App() {
             <CreateBlog blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm}/>
           </div>
           <div>
-            <ul style={{ listStyle: 'none', paddingLeft: 0 }}>{showAllBlogs()}</ul>
+            <ul className='blogs' style={{ listStyle: 'none', paddingLeft: 0 }}>{showAllBlogs()}</ul>
             <p>Total blogs: {blogs.length}</p>
           </div>
         </div>

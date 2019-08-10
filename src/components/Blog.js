@@ -41,7 +41,7 @@ let Blog = ({ blog, user }) => {
   return (
     <div style={blogStyle}>
       {showDetailedBlog ?
-        showBlogDetails() : <div onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
+        showBlogDetails() : <div className='show-blog-details' onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
           {updatedBlog.title} - {updatedBlog.author}
         </div>
       }
