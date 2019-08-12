@@ -12,18 +12,19 @@ const Login = ({ displayMessage, setUser }) => {
       .login({ username: username.value, password: password.value })
       .then(response => {
         if (!response.hasOwnProperty('error')) {
-          window.localStorage.setItem('user', JSON.stringify(response))
-          console.log(`User in Login.js is ${window.localStorage.getItem('user')}`)
           setUser(response)
+          window.localStorage.setItem('user', JSON.stringify(response))
         }
         else {
           displayMessage(response.error, 'red')
+          username.reset()
+          password.reset()
         }
       })
-      .finally(() => {
-        username.reset()
-        password.reset()
-      })
+      // .finally(() => {
+      //   username.reset()
+      //   password.reset()
+      // })
   }
 
   return (
