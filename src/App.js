@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Login from './components/Login'
 import Notification from './components/Notification'
 import PropTypes from 'prop-types'
+import { useResource } from './hooks/index'
 
 function App() {
-  const [ blogs, setBlogs ] = useState([])
+  const [ blogs, blogService ] = useResource('http://localhost:3003/api/blogs')
   const [ title, setTitle ] = useState('')
   const [ author, setAuthor ] = useState('')
   const [ url, setURL ] = useState('')
@@ -17,75 +16,32 @@ function App() {
   const [ msgColor, setMsgColor ] = useState(null)
   const [ visible, setVisible ] = useState(true)
 
-  // useEffect(() => {
-  //   blogService
-  //   .getAll()
-  //   .then(result => setBlogs(result))}, [])
-
   const showAllBlogs = () => {
-    console.log('In showAllBlogs of App...')
-    blogService
-      .getAll()
-      .then(result => setBlogs(result.sort((blog1, blog2) => blog2.likes - blog1.likes)))
-      .catch(error => console.log(`Error in getting all blogs! ${error}`))
-    return blogs.map(blog => <li key={blog.id}><Blog blog={blog} user={user} className={'blog'}/></li>)
+    blogService.getAll()
+    return blogs.map(blog => <li key={blog.id}><Blog blog={blog} user={JSON.parse(window.localStorage.getItem('user'))} /></li>)
   }
 
   const onChange = (event) => {
     switch(event.target.name) {
-    case 'title'    : setTitle(event.target.value)
+    case 'title'  : setTitle(event.target.value)
       break
-    case 'author'   : setAuthor(event.target.value)
+    case 'author' : setAuthor(event.target.value)
       break
-    case 'url'      : setURL(event.target.value)
+    case 'url'    : setURL(event.target.value)
       break
-    default         :
+    default       :
     }
   }
-
-  // const handleLogin = async (event) => {
-  //   event.preventDefault()
-  //   try {
-  //     const loggedInUser = await loginService.login({username, password})
-  //     window.localStorage.setItem('user', JSON.stringify(loggedInUser))
-  //     clearLoginInputFields()
-  //     setUser(loggedInUser)
-  //   }
-  //   catch(error) {
-  //     setErrorMsg('Wrong credentials')
-  //     setTimeout(() => setErrorMsg(null), 5000)
-  //   }
-  // }
 
   const handleLogout = () => {
     window.localStorage.removeItem('user')
     setUser(null)
   }
 
-  // const onClick = async (event) => {
-  //   const blog = { title, author, url }
-  //   clearBlogInputFields()
-  //   // const newBlog =
-  //   await blogService.addBlog(blog, `bearer ${user.token}`)
-  //   // setBlogs(blogs.concat(newBlog))
-  // }
-
   const onClick = () => {
     const blog = { title, author, url }
+    blogService.create(blog)
     clearBlogInputFields()
-    // const newBlog =
-    blogService
-      .addBlog(blog, `bearer ${user.token}`)
-      .then(response => {
-        if (response.hasOwnProperty('error')) {
-          displayMessage(response.error, 'red')
-        }
-        else {
-          const msg = `a new blog ${response.title} by ${response.author} has been added`
-          displayMessage(msg, 'green')
-        }
-      })
-    // setBlogs(blogs.concat(newBlog))
   }
 
   const showOrHideForm = () => {
@@ -101,7 +57,7 @@ function App() {
   const displayMessage = (msg, color) => {
     setMessage(msg)
     setMsgColor(color)
-    setTimeout(() => setMessage(null), 5000)
+    setTimeout(() => setMessage(null), 2000)
   }
 
   const setVisibility = visibility => visibility ? '' : 'none'
@@ -131,7 +87,9 @@ function App() {
             <CreateBlog blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm}/>
           </div>
           <div>
-            <ul className='blogs' style={{ listStyle: 'none', paddingLeft: 0 }}>{showAllBlogs()}</ul>
+            <ul className='blogs' style={{ listStyle: 'none', paddingLeft: 0 }}>
+              {showAllBlogs()}
+            </ul>
             <p>Total blogs: {blogs.length}</p>
           </div>
         </div>

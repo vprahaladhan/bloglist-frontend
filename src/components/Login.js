@@ -1,5 +1,5 @@
 import React from 'react'
-import { useField } from '../hooks'
+import { useField } from '../hooks/index'
 import loginService from '../services/login'
 
 const Login = ({ displayMessage, setUser }) => {
@@ -13,7 +13,7 @@ const Login = ({ displayMessage, setUser }) => {
       .then(response => {
         if (!response.hasOwnProperty('error')) {
           window.localStorage.setItem('user', JSON.stringify(response))
-          console.log(window.localStorage.getItem('user'))
+          console.log(`User in Login.js is ${window.localStorage.getItem('user')}`)
           setUser(response)
         }
         else {
@@ -21,20 +21,16 @@ const Login = ({ displayMessage, setUser }) => {
         }
       })
       .finally(() => {
-        clearLoginInputFields()
+        username.reset()
+        password.reset()
       })
-  }
-
-  const clearLoginInputFields = () => {
-    username.reset()
-    password.reset()
   }
 
   return (
     <div>
       <form name="login-form" onSubmit={handleLogin}>
-        <div>Username: <input {...username} /></div>
-        <div>Password: <input {...password} /></div>
+        <div>Username: <input {...{ ...username, reset: undefined }} /></div>
+        <div>Password: <input {...{ ...password, reset: undefined }} /></div>
         <div><button type="submit">Submit</button></div>
       </form>
     </div>
