@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import blogService from '../services/blogs'
+import { addLikesToBlog, removeBlog, showNotification } from '../reducers/blogsReducer'
 
-let Blog = ({ blog, user }) => {
+let Blog = ({ blog, user, store }) => {
   const [ showDetailedBlog, setShowDetailedBlog ] = useState(false)
-  const [ updatedBlog, setUpdatedBlog] = useState(blog)
 
   const blogStyle = {
     paddingTop: 5,
@@ -13,28 +12,30 @@ let Blog = ({ blog, user }) => {
     marginBottom: 5
   }
 
-  const incrementLikes = () => {
-    blogService.likeBlog(blog).then(response => setUpdatedBlog(response))
+  const incrementLikes = async () => {
+    store.dispatch(await addLikesToBlog(blog))
   }
 
-  const deleteBlog = () => {
-    blogService.removeBlog(updatedBlog, user)
+  const deleteBlog = async () => {
+    console.log('Token: ', JSON.parse(window.localStorage.getItem('user')).token)
+    store.dispatch(await removeBlog(blog, JSON.parse(window.localStorage.getItem('user')).token))
+    store.dispatch(showNotification(`Sucessfully deleted blog: ${blog.title}`, 'red'))
+    setTimeout(() => store.dispatch(showNotification('', '')), 2000)
   }
 
   const showBlogDetails = () => {
     return (
       <div>
         <div onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
-          {updatedBlog.title}
+          {blog.title}
         </div>
-        <div>{updatedBlog.url}</div>
+        <div>{blog.url}</div>
         <div>
-          {updatedBlog.likes} likes&nbsp;&nbsp;
+          {blog.likes} likes&nbsp;&nbsp;
           <button onClick={incrementLikes}>like</button>
         </div>
-        <div>{updatedBlog.user ? `added by ${updatedBlog.user.name}` : ''}</div>
-        {user.username === updatedBlog.user.username ?
-          <button onClick={deleteBlog}>remove</button> : ''}
+        <div>{blog.user ? `added by ${blog.user.name}` : ''}</div>
+        {JSON.parse(user).username === blog.user.username ? <button onClick={deleteBlog}>remove</button> : ''}
       </div>)
   }
 
@@ -42,7 +43,7 @@ let Blog = ({ blog, user }) => {
     <div style={blogStyle}>
       {showDetailedBlog ?
         showBlogDetails() : <div className='show-blog-details' onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
-          {updatedBlog.title} - {updatedBlog.author}
+          {blog.title} - {blog.author}
         </div>
       }
     </div>

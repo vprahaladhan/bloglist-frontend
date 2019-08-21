@@ -2,14 +2,14 @@ import axios from 'axios'
 
 const baseUrl = 'http://localhost:3003/api/blogs'
 
-const getAll = () => {
-  console.log('In showAllBlogs of blogs.js')
-  return axios.get(baseUrl).then(response => response.data)
+const getAll = async () => {
+  const response = await axios.get(baseUrl)
+  return response.data
 }
 
 const addBlog = (newBlog, token) => {
   const config = {
-    headers: { Authorization: token },
+    headers: { Authorization: `bearer ${token}` },
   }
   return axios
     .post(baseUrl, newBlog, config)
@@ -29,7 +29,7 @@ const likeBlog = (blog) => {
     likes: blog.likes + 1,
     user: blog.user.id
   }
-
+  console.log('Blog to update 2: ', blogToUpdate)
   return axios
     .put(`${baseUrl}/${blogToUpdate.id}`, blogToUpdate)
     .then(response => response.data)
@@ -46,9 +46,9 @@ const getBlog = (blog) => {
     .catch(error => error.response.data)
 }
 
-const removeBlog = (blog, user) => {
+const removeBlog = (blog, token) => {
   const config = {
-    headers: { Authorization: `bearer ${user.token}` }
+    headers: { Authorization: `bearer ${token}` }
   }
   if (window.confirm('do you really want to delete the blog?')) {
     console.log('About to remove blog!!!')

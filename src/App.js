@@ -1,25 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import CreateBlog from './components/CreateBlog'
 import Login from './components/Login'
 import Notification from './components/Notification'
 import PropTypes from 'prop-types'
-import { useResource } from './hooks/index'
+import { displayAllBlogs, setLoggedInUser, createBlog, showNotification } from './reducers/blogsReducer'
 
-export default function App() {
-  const [ blogs, blogService ] = useResource('http://localhost:3003/api/blogs')
+export default function App({ store }) {
   const [ title, setTitle ] = useState('')
   const [ author, setAuthor ] = useState('')
   const [ url, setURL ] = useState('')
-  const [ user, setUser ] = useState(null)
-  const [ message, setMessage ] = useState(null)
-  const [ msgColor, setMsgColor ] = useState(null)
   const [ visible, setVisible ] = useState(true)
 
-  const showAllBlogs = () => {
-    blogService.getAll()
-    return blogs.map(blog => <li key={blog.id}><Blog blog={blog} user={user} /></li>)
-  }
+  useEffect( () => {
+    async function fetchBlogs() {
+      store.dispatch(await displayAllBlogs())
+    }
+    fetchBlogs()
+  }, [store])
+
+  const blog = { title, author, url }
 
   const onChange = (event) => {
     switch(event.target.name) {
@@ -33,9 +33,11 @@ export default function App() {
     }
   }
 
-  const onClick = () => {
+  const onClick = async () => {
     const blog = { title, author, url }
-    blogService.create(blog)
+    store.dispatch(await createBlog(blog, JSON.parse(window.localStorage.getItem('user')).token))
+    store.dispatch(showNotification(`You created a new blog - ${blog.title}`, 'green'))
+    setTimeout(() => store.dispatch(showNotification('', '')), 2000)
     clearBlogInputFields()
   }
 
@@ -51,32 +53,24 @@ export default function App() {
     setURL('')
   }
 
-  const displayMessage = (msg, color) => {
-    setMessage(msg)
-    setMsgColor(color)
-    setTimeout(() => setMessage(null), 2000)
-  }
-
-  const blog = { title, author, url }
-
   const handleLogout = () => {
-    setUser(null)
     window.localStorage.removeItem('user')
+    store.dispatch(setLoggedInUser(null))
   }
 
   return (
     <div className="App">
-      {!user ?
+      {!window.localStorage.getItem('user') ?
         <div>
           <h1>Log in to App</h1>
-          {message ? <Notification message={message} msgColor={msgColor} /> : <></>}
-          <Login displayMessage={displayMessage} setUser={(response) => setUser(response)}/>
+          {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}
+          <Login store={store} />
         </div> :
         <div>
           <h1>Blogs</h1>
-          {message ? <Notification message={message} msgColor={msgColor} /> : <></>}
+          {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}
           <p>
-            User {user.name} logged in
+            User {JSON.parse(window.localStorage.getItem('user')).name} logged in
             <button onClick={handleLogout}>Logout</button>
           </p>
           <div style={{ display: setVisibility(visible) }}>
@@ -88,9 +82,13 @@ export default function App() {
           </div>
           <div>
             <ul className='blogs' style={{ listStyle: 'none', paddingLeft: 0 }}>
-              {showAllBlogs()}
+              {store.getState().blogs.map(blog =>
+                <li key={blog.id}>
+                  <Blog blog={blog} user={window.localStorage.getItem('user')} store={store} />
+                </li>
+              )}
             </ul>
-            <p>Total blogs: {blogs.length}</p>
+            <p>Total blogs: {store.getState().blogs.length}</p>
           </div>
         </div>
       }

@@ -1,8 +1,9 @@
 import React from 'react'
 import { useField } from '../hooks/index'
 import loginService from '../services/login'
+import { setLoggedInUser, showNotification } from '../reducers/blogsReducer'
 
-const Login = ({ displayMessage, setUser }) => {
+const Login = ({ store }) => {
   const username = useField('text')
   const password = useField('password')
 
@@ -12,19 +13,17 @@ const Login = ({ displayMessage, setUser }) => {
       .login({ username: username.value, password: password.value })
       .then(response => {
         if (!response.hasOwnProperty('error')) {
-          setUser(response)
+          console.log('User: ', JSON.stringify(response))
           window.localStorage.setItem('user', JSON.stringify(response))
+          store.dispatch(setLoggedInUser(response))
         }
         else {
-          displayMessage(response.error, 'red')
+          store.dispatch(showNotification(response.error, 'red'))
           username.reset()
           password.reset()
+          setTimeout(() => store.dispatch(showNotification('', '')), 2000)
         }
       })
-      // .finally(() => {
-      //   username.reset()
-      //   password.reset()
-      // })
   }
 
   return (
