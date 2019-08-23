@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
 import Blog from './components/Blog'
+import Blogs from './components/Blogs'
+import User from './components/User'
+import Users from './components/Users'
 import CreateBlog from './components/CreateBlog'
 import Login from './components/Login'
 import Notification from './components/Notification'
-import PropTypes from 'prop-types'
-import { displayAllBlogs, setLoggedInUser, createBlog, showNotification } from './reducers/blogsReducer'
+import { displayAllBlogs, displayAllUsers } from './reducers/blogsReducer'
+import { setLoggedInUser, createBlog, showNotification } from './reducers/blogsReducer'
 
 export default function App({ store }) {
   const [ title, setTitle ] = useState('')
@@ -15,6 +20,7 @@ export default function App({ store }) {
   useEffect( () => {
     async function fetchBlogs() {
       store.dispatch(await displayAllBlogs())
+      store.dispatch(await displayAllUsers())
     }
     fetchBlogs()
   }, [store])
@@ -56,42 +62,46 @@ export default function App({ store }) {
   const handleLogout = () => {
     window.localStorage.removeItem('user')
     store.dispatch(setLoggedInUser(null))
+    setVisible(true)
   }
 
   return (
-    <div className="App">
-      {!window.localStorage.getItem('user') ?
-        <div>
-          <h1>Log in to App</h1>
-          {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}
-          <Login store={store} />
-        </div> :
-        <div>
-          <h1>Blogs</h1>
-          {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}
-          <p>
-            User {JSON.parse(window.localStorage.getItem('user')).name} logged in
-            <button onClick={handleLogout}>Logout</button>
-          </p>
-          <div style={{ display: setVisibility(visible) }}>
-            <button name='show-form' onClick={showOrHideForm}>Show Form</button>
-          </div>
-          <div style={{ display: setVisibility(!visible) }}>
-            <h1><p>Create New Blog</p></h1>
-            <CreateBlog blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm}/>
-          </div>
-          <div>
-            <ul className='blogs' style={{ listStyle: 'none', paddingLeft: 0 }}>
-              {store.getState().blogs.map(blog =>
-                <li key={blog.id}>
-                  <Blog blog={blog} user={window.localStorage.getItem('user')} store={store} />
-                </li>
-              )}
-            </ul>
-            <p>Total blogs: {store.getState().blogs.length}</p>
-          </div>
+    <div>
+      <Router>
+        <div className="App">
+          {!window.localStorage.getItem('user') ?
+            <div>
+              <h1>Log in to App</h1>
+              {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}
+              <Login store={store} />
+              <Redirect to="/" />
+            </div> :
+            <div>
+              <Link style={{ padding: 5 }} to="/blogs">blogs</Link>
+              <Link style={{ padding: 5 }} to="/users">users</Link>
+              User {JSON.parse(window.localStorage.getItem('user')).name} logged in <button onClick={handleLogout}>Logout</button>
+              <div>
+                <h1>Blogs</h1>
+                {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}
+              </div>
+              <Route exact path="/" render={() => <Blogs store={store} setVisibility={setVisibility} visible={visible} blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm} />} />
+              <Route exact path="/blogs"  render={() => <Blogs store={store} setVisibility={setVisibility} visible={visible} blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm} />} />
+              <Route path="/blogs/:id" render={({ match }) => {
+                return <Blog
+                  blog={store.getState().blogs.find(blog => blog.id === match.params.id)}
+                  user={JSON.parse(window.localStorage.getItem('user'))}
+                  store={store} />
+              }} />
+              <Route exact path="/users"  render={() => <Users store={store} />} />
+              <Route path="/users/:id" render={({ match }) => {
+                const user = store.getState().users.find(user => user.id === match.params.id)
+                return <User user={user} />
+              }
+              } />
+            </div>
+          }
         </div>
-      }
+      </Router>
     </div>
   )
 }

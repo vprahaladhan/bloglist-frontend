@@ -1,23 +1,22 @@
 import React, { useState } from 'react'
-import { addLikesToBlog, removeBlog, showNotification } from '../reducers/blogsReducer'
+import { Redirect } from 'react-router-dom'
+import { addLikesToBlog, addCommentToBlog, removeBlog, showNotification } from '../reducers/blogsReducer'
 
 let Blog = ({ blog, user, store }) => {
-  const [ showDetailedBlog, setShowDetailedBlog ] = useState(false)
-
-  const blogStyle = {
-    paddingTop: 5,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
+  // const [ showDetailedBlog, setShowDetailedBlog ] = useState(false)
+  const [ redirect, setRedirect ] = useState(false)
+  const [ comment, setComment ] = useState('')
 
   const incrementLikes = async () => {
     store.dispatch(await addLikesToBlog(blog))
   }
 
+  const addComment = async() => {
+    store.dispatch(await addCommentToBlog(blog, comment))
+  }
+
   const deleteBlog = async () => {
-    console.log('Token: ', JSON.parse(window.localStorage.getItem('user')).token)
+    setRedirect(true)
     store.dispatch(await removeBlog(blog, JSON.parse(window.localStorage.getItem('user')).token))
     store.dispatch(showNotification(`Sucessfully deleted blog: ${blog.title}`, 'red'))
     setTimeout(() => store.dispatch(showNotification('', '')), 2000)
@@ -26,26 +25,47 @@ let Blog = ({ blog, user, store }) => {
   const showBlogDetails = () => {
     return (
       <div>
-        <div onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
-          {blog.title}
-        </div>
-        <div>{blog.url}</div>
-        <div>
-          {blog.likes} likes&nbsp;&nbsp;
-          <button onClick={incrementLikes}>like</button>
-        </div>
-        <div>{blog.user ? `added by ${blog.user.name}` : ''}</div>
-        {JSON.parse(user).username === blog.user.username ? <button onClick={deleteBlog}>remove</button> : ''}
-      </div>)
+        {blog ?
+          <div>
+            {/* <div onClick={() => setShowDetailedBlog(!showDetailedBlog)}> */}
+            <div><h1>{blog.title}</h1></div>
+            {/* </div> */}
+            <div>{blog.url}</div>
+            <div>
+              {blog.likes} likes&nbsp;&nbsp;
+              <button onClick={incrementLikes}>like</button>
+            </div>
+            <div>{blog.user ? `added by ${blog.user.name}` : ''}</div>
+            <div>{console.log(`User 1: ${user.username}, User 2: ${blog.user.username}`)}</div>
+            <div>
+              {user.username === blog.user.username ? <button onClick={deleteBlog}>remove</button> : ''}
+            </div>
+            <div><h3>comments</h3></div>
+            <div>
+              <input
+                type='text'
+                name='comment'
+                placeholder='add comment...'
+                value={comment}
+                onChange={(event) => setComment(event.target.value)} />
+              <button onClick={addComment}>add comment</button>
+            </div>
+            <div>
+              <ul>
+                {blog.comments.map((comment, index) => <li key={index}>{comment}</li>)}
+              </ul>
+            </div>
+          </div> : null}
+      </div>
+    )
   }
 
   return (
-    <div style={blogStyle}>
-      {showDetailedBlog ?
-        showBlogDetails() : <div className='show-blog-details' onClick={() => setShowDetailedBlog(!showDetailedBlog)}>
-          {blog.title} - {blog.author}
-        </div>
-      }
+    <div>
+      <div>
+        {console.log('Redirect: ', redirect)}
+        {redirect ? <Redirect to="/blogs" /> : showBlogDetails()}
+      </div>
     </div>
   )
 }
