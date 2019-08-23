@@ -18,8 +18,8 @@ let Blog = ({ blog, user, store }) => {
   const deleteBlog = async () => {
     setRedirect(true)
     store.dispatch(await removeBlog(blog, JSON.parse(window.localStorage.getItem('user')).token))
-    store.dispatch(showNotification(`Sucessfully deleted blog: ${blog.title}`, 'red'))
-    setTimeout(() => store.dispatch(showNotification('', '')), 2000)
+    store.dispatch(showNotification(`Sucessfully deleted blog: ${blog.title}`, 'green', 'success'))
+    setTimeout(() => store.dispatch(showNotification('', '', '')), 2000)
   }
 
   const showBlogDetails = () => {

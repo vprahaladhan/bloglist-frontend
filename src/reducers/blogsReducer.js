@@ -50,16 +50,16 @@ export const setLoggedInUser = (user) => {
   }
 }
 
-export const showNotification = (message, messageColor) => {
+export const showNotification = (message, messageColor, status) => {
   return {
     type: 'SHOW_NOTIFICATION',
-    data: { message, messageColor }
+    data: { message, messageColor, status }
   }
 }
 
 const sortBlogsByLikes = blogs => blogs.sort((firstBlog, secondBlog) => secondBlog.likes - firstBlog.likes)
 
-const notification = { message: '', messageColor: '' }
+const notification = { message: '', messageColor: '', status: '' }
 
 const reducer = (state = { blogs: [], users: [], user: null, notification: notification }, action) => {
   switch(action.type) {

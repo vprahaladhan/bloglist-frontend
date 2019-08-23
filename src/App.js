@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Route, Redirect, Link } from 'react-router-dom'
+import { Container, Message, Menu } from 'semantic-ui-react'
 import PropTypes from 'prop-types'
 import Blog from './components/Blog'
 import Blogs from './components/Blogs'
@@ -10,6 +11,7 @@ import Login from './components/Login'
 import Notification from './components/Notification'
 import { displayAllBlogs, displayAllUsers } from './reducers/blogsReducer'
 import { setLoggedInUser, createBlog, showNotification } from './reducers/blogsReducer'
+import styled from 'styled-components'
 
 export default function App({ store }) {
   const [ title, setTitle ] = useState('')
@@ -27,6 +29,10 @@ export default function App({ store }) {
 
   const blog = { title, author, url }
 
+  const Navigation = styled.div`
+  background: BurlyWood;
+  padding: 1em;
+  `
   const onChange = (event) => {
     switch(event.target.name) {
     case 'title'  : setTitle(event.target.value)
@@ -42,8 +48,8 @@ export default function App({ store }) {
   const onClick = async () => {
     const blog = { title, author, url }
     store.dispatch(await createBlog(blog, JSON.parse(window.localStorage.getItem('user')).token))
-    store.dispatch(showNotification(`You created a new blog - ${blog.title}`, 'green'))
-    setTimeout(() => store.dispatch(showNotification('', '')), 2000)
+    store.dispatch(showNotification(`You created a new blog - ${blog.title}`, 'green', 'success'))
+    setTimeout(() => store.dispatch(showNotification('', '', '')), 2000)
     clearBlogInputFields()
   }
 
@@ -66,22 +72,31 @@ export default function App({ store }) {
   }
 
   return (
-    <div>
+    <Container>
       <Router>
         <div className="App">
           {!window.localStorage.getItem('user') ?
             <div>
               <h1>Log in to App</h1>
-              {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}
+              {store.getState().notification.message ?
+                <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}
+              {/* <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> */}
               <Login store={store} />
               <Redirect to="/" />
             </div> :
             <div>
-              <Link style={{ padding: 5 }} to="/blogs">blogs</Link>
-              <Link style={{ padding: 5 }} to="/users">users</Link>
-              User {JSON.parse(window.localStorage.getItem('user')).name} logged in <button onClick={handleLogout}>Logout</button>
+              <Menu>
+                <Menu.Item><Link style={{ padding: 5 }} to="/blogs">blogs</Link></Menu.Item>
+                <Menu.Item><Link style={{ padding: 5 }} to="/users">users</Link></Menu.Item>
+                <Menu.Item>
+                  User {JSON.parse(window.localStorage.getItem('user')).name} logged in <button onClick={handleLogout}>Logout</button>
+                </Menu.Item>
+              </Menu>
+              {store.getState().notification.message ?
+                <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}
+              {/* <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> */}
               <div>
-                <h1>Blogs</h1>
+                <h1>Blog app</h1>
                 {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}
               </div>
               <Route exact path="/" render={() => <Blogs store={store} setVisibility={setVisibility} visible={visible} blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm} />} />
@@ -102,7 +117,7 @@ export default function App({ store }) {
           }
         </div>
       </Router>
-    </div>
+    </Container>
   )
 }
 

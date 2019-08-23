@@ -18,20 +18,26 @@ const Login = ({ store }) => {
           store.dispatch(setLoggedInUser(response))
         }
         else {
-          store.dispatch(showNotification(response.error, 'red'))
+          store.dispatch(showNotification(response.error + '! please try again.', 'red', 'negative'))
           username.reset()
           password.reset()
-          setTimeout(() => store.dispatch(showNotification('', '')), 2000)
+          setTimeout(() => store.dispatch(showNotification('', '', '')), 2000)
         }
       })
   }
 
   return (
     <div>
-      <form name="login-form" onSubmit={handleLogin}>
-        <div>Username: <input {...{ ...username, reset: undefined }} /></div>
-        <div>Password: <input {...{ ...password, reset: undefined }} /></div>
-        <div><button type="submit">Submit</button></div>
+      <form className="ui form" name="login-form" onSubmit={handleLogin}>
+        <div className="field">
+          <label>Username:</label>
+          <input {...{ ...username, reset: undefined }} />
+        </div>
+        <div className="field">
+          <label>Password:</label>
+          <input {...{ ...password, reset: undefined }} />
+        </div>
+        <button className="ui button" type="submit">Submit</button>
       </form>
     </div>
   )

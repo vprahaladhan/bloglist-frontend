@@ -10,7 +10,8 @@ const Notification = ({ message, msgColor }) => {
     padding: 10,
     marginBottom: 10
   }
-  // messageStyle.color = msgColor
+
+  messageStyle.color = msgColor
 
   return <div style={messageStyle}>{message}</div>
 }
