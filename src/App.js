@@ -11,7 +11,7 @@ import Login from './components/Login'
 import Notification from './components/Notification'
 import { displayAllBlogs, displayAllUsers } from './reducers/blogsReducer'
 import { setLoggedInUser, createBlog, showNotification } from './reducers/blogsReducer'
-import styled from 'styled-components'
+import './App.css'
 
 export default function App({ store }) {
   const [ title, setTitle ] = useState('')
@@ -29,10 +29,10 @@ export default function App({ store }) {
 
   const blog = { title, author, url }
 
-  const Navigation = styled.div`
-  background: BurlyWood;
-  padding: 1em;
-  `
+  // const Navigation = styled.div`
+  // background: BurlyWood;
+  // padding: 1em;`
+
   const onChange = (event) => {
     switch(event.target.name) {
     case 'title'  : setTitle(event.target.value)
@@ -80,7 +80,6 @@ export default function App({ store }) {
               <h1>Log in to App</h1>
               {store.getState().notification.message ?
                 <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}
-              {/* <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> */}
               <Login store={store} />
               <Redirect to="/" />
             </div> :
@@ -89,12 +88,12 @@ export default function App({ store }) {
                 <Menu.Item><Link style={{ padding: 5 }} to="/blogs">blogs</Link></Menu.Item>
                 <Menu.Item><Link style={{ padding: 5 }} to="/users">users</Link></Menu.Item>
                 <Menu.Item>
-                  User {JSON.parse(window.localStorage.getItem('user')).name} logged in <button onClick={handleLogout}>Logout</button>
+                  User {JSON.parse(window.localStorage.getItem('user')).name} logged in 
+                  <button className="ui button" onClick={handleLogout}>Logout</button>
                 </Menu.Item>
               </Menu>
               {store.getState().notification.message ?
                 <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}
-              {/* <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> */}
               <div>
                 <h1>Blog app</h1>
                 {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}

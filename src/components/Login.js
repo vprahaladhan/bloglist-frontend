@@ -2,6 +2,7 @@ import React from 'react'
 import { useField } from '../hooks/index'
 import loginService from '../services/login'
 import { setLoggedInUser, showNotification } from '../reducers/blogsReducer'
+import { Button } from 'semantic-ui-react'
 
 const Login = ({ store }) => {
   const username = useField('text')
@@ -37,7 +38,7 @@ const Login = ({ store }) => {
           <label>Password:</label>
           <input {...{ ...password, reset: undefined }} />
         </div>
-        <button className="ui button" type="submit">Submit</button>
+        <Button size='large' color='blue' type="submit">Submit</Button>
       </form>
     </div>
   )

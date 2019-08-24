@@ -13,6 +13,7 @@ let Blog = ({ blog, user, store }) => {
 
   const addComment = async() => {
     store.dispatch(await addCommentToBlog(blog, comment))
+    setComment('')
   }
 
   const deleteBlog = async () => {
@@ -33,12 +34,13 @@ let Blog = ({ blog, user, store }) => {
             <div>{blog.url}</div>
             <div>
               {blog.likes} likes&nbsp;&nbsp;
-              <button onClick={incrementLikes}>like</button>
+              <button className="ui button" onClick={incrementLikes}>like</button>
             </div>
+            {console.log('User in Blog.js: ', blog)}
             <div>{blog.user ? `added by ${blog.user.name}` : ''}</div>
             <div>{console.log(`User 1: ${user.username}, User 2: ${blog.user.username}`)}</div>
             <div>
-              {user.username === blog.user.username ? <button onClick={deleteBlog}>remove</button> : ''}
+              {user.username === blog.user.username ? <button className="ui button" onClick={deleteBlog}>remove</button> : ''}
             </div>
             <div><h3>comments</h3></div>
             <div>
@@ -48,7 +50,7 @@ let Blog = ({ blog, user, store }) => {
                 placeholder='add comment...'
                 value={comment}
                 onChange={(event) => setComment(event.target.value)} />
-              <button onClick={addComment}>add comment</button>
+              <button className="ui button" onClick={addComment}>add comment</button>
             </div>
             <div>
               <ul>

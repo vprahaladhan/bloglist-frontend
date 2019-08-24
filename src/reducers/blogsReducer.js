@@ -69,8 +69,18 @@ const reducer = (state = { blogs: [], users: [], user: null, notification: notif
     const blogs = sortBlogsByLikes(state.blogs.map(blog => blog.id !== action.data.id ? blog : action.data))
     return { ...state, blogs: blogs }
   }
-  case 'ADD_NEW_BLOG'       : return { ...state, blogs: state.blogs.concat(action.data) }
-  case 'REMOVE_BLOG'        : return { ...state, blogs: state.blogs.filter(blog => blog.id !== action.data.id) }
+  case 'ADD_NEW_BLOG'       : {
+    const newState = { ...state, blogs: sortBlogsByLikes(state.blogs.concat(action.data)) }
+    const newUser = newState.users.find(user => user.username === state.user.username)
+    newUser.blogs = newUser.blogs.concat(action.data)
+    return newState
+  }
+  case 'REMOVE_BLOG'        : {
+    const newState = { ...state, blogs: sortBlogsByLikes(state.blogs.filter(blog => blog.id !== action.data.id)) }
+    const newUser = newState.users.find(user => user.blogs.find(blog => blog.id === action.data.id))
+    newUser.blogs = newUser.blogs.filter(blog => blog.id !== action.data.id)
+    return { ...newState, users: newState.users.map(user => user.id !== newUser.id ? user : newUser) }
+  }
   case 'ADD_COMMENT'        :
   {
     const blogs = sortBlogsByLikes(state.blogs.map(blog => blog.id !== action.data.id ? blog : action.data))

@@ -1,6 +1,6 @@
 import React from 'react'
 import {  Link, Route } from 'react-router-dom'
-import User from './User'
+// import User from './User'
 
 const AllUsers = ({ store }) => {
   return (

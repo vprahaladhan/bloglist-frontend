@@ -13,7 +13,10 @@ const Notification = ({ message, msgColor }) => {
 
   messageStyle.color = msgColor
 
-  return <div style={messageStyle}>{message}</div>
+  return (
+    // <div style={messageStyle}>{message}</div>
+    <></>
+  )
 }
 
 export default Notification

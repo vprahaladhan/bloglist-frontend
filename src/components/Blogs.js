@@ -16,7 +16,7 @@ const Blogs = ({ store, setVisibility, visible, blog, onChange, onClick, showOrH
   return (
     <div>
       <div style={{ display: setVisibility(visible) }}>
-        <button name='show-form' onClick={showOrHideForm}>Show Form</button>
+        <button className="ui button" name='show-form' onClick={showOrHideForm}>Show Form</button>
       </div>
       <div style={{ display: setVisibility(!visible) }}>
         <h1><p>Create New Blog</p></h1>

@@ -1,0 +1,8 @@
+.ui.button {
+    size: massive
+}
+
+Button {
+    color: blue;
+    size: tiny
+}
