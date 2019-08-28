@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import CreateBlog from './CreateBlog'
 import { Table } from 'semantic-ui-react'
+import { displayAllBlogs } from '../reducers/blogsReducer'
 
 const Blogs = ({ store, setVisibility, visible, blog, onChange, onClick, showOrHideForm }) => {
 
@@ -12,6 +13,13 @@ const Blogs = ({ store, setVisibility, visible, blog, onChange, onClick, showOrH
     borderWidth: 1,
     marginBottom: 5
   }
+
+  useEffect( () => {
+    async function fetchAllBlogs() {
+      store.dispatch(await displayAllBlogs())
+    }
+    fetchAllBlogs()
+  }, [store])
 
   return (
     <div>
@@ -26,6 +34,7 @@ const Blogs = ({ store, setVisibility, visible, blog, onChange, onClick, showOrH
         <Table striped celled>
           <Table.Body>
             {/* <ul className='blogs' style={{ listStyle: 'none', paddingLeft: 0 }}> */}
+            {console.log('Blogs in Blogs.js: ', store.getState().blogs)}
             {store.getState().blogs.map(blog =>
               <Table.Row key={blog.id} style={blogStyle}>
                 {/* <Blog blog={blog} user={window.localStorage.getItem('user')} store={store} /> */}

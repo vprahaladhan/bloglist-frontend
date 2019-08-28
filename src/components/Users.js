@@ -1,8 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {  Link, Route } from 'react-router-dom'
-// import User from './User'
+import { displayAllUsers } from '../reducers/blogsReducer'
 
 const AllUsers = ({ store }) => {
+  useEffect( () => {
+    async function fetchAllUsers() {
+      store.dispatch(await displayAllUsers())
+    }
+    fetchAllUsers()
+  }, [store])
+
   return (
     <div>
       <h1>Users</h1>

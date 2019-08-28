@@ -8,6 +8,7 @@ import User from './components/User'
 import Users from './components/Users'
 import CreateBlog from './components/CreateBlog'
 import Login from './components/Login'
+import Signup from './components/Signup'
 import Notification from './components/Notification'
 import { displayAllBlogs, displayAllUsers } from './reducers/blogsReducer'
 import { setLoggedInUser, createBlog, showNotification } from './reducers/blogsReducer'
@@ -20,21 +21,18 @@ export default function App({ store }) {
   const [ visible, setVisible ] = useState(true)
 
   useEffect( () => {
-    async function fetchBlogs() {
+    console.log('In useEffect of App.js...')
+    async function fetchBlogsAndUsers() {
       store.dispatch(await displayAllBlogs())
       store.dispatch(await displayAllUsers())
     }
-    fetchBlogs()
-  }, [store])
+    fetchBlogsAndUsers()
+  }, [])
 
   const blog = { title, author, url }
 
-  // const Navigation = styled.div`
-  // background: BurlyWood;
-  // padding: 1em;`
-
   const onChange = (event) => {
-    switch(event.target.name) {
+    switch(event.target.id) {
     case 'title'  : setTitle(event.target.value)
       break
     case 'author' : setAuthor(event.target.value)
@@ -47,8 +45,10 @@ export default function App({ store }) {
 
   const onClick = async () => {
     const blog = { title, author, url }
+    console.log('State in onClick (create blog): ', store.getState())
     store.dispatch(await createBlog(blog, JSON.parse(window.localStorage.getItem('user')).token))
-    store.dispatch(showNotification(`You created a new blog - ${blog.title}`, 'green', 'success'))
+    const msg = store.getState().notification
+    store.dispatch(showNotification(msg.message, msg.messageColor, msg.status))
     setTimeout(() => store.dispatch(showNotification('', '', '')), 2000)
     clearBlogInputFields()
   }
@@ -77,10 +77,10 @@ export default function App({ store }) {
         <div className="App">
           {!window.localStorage.getItem('user') ?
             <div>
-              <h1>Log in to App</h1>
               {store.getState().notification.message ?
                 <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}
-              <Login store={store} />
+              <Route exact path="/" render={() => <Login store={store}  /> } />
+              <Route path="/signup" render={() => <Signup store={store} /> } />
               <Redirect to="/" />
             </div> :
             <div>
@@ -88,17 +88,18 @@ export default function App({ store }) {
                 <Menu.Item><Link style={{ padding: 5 }} to="/blogs">blogs</Link></Menu.Item>
                 <Menu.Item><Link style={{ padding: 5 }} to="/users">users</Link></Menu.Item>
                 <Menu.Item>
-                  User {JSON.parse(window.localStorage.getItem('user')).name} logged in 
+                  User {JSON.parse(window.localStorage.getItem('user')).name} logged in
                   <button className="ui button" onClick={handleLogout}>Logout</button>
                 </Menu.Item>
               </Menu>
+              <Redirect to='/blogs' />
+              {console.log('Notification: ', store.getState().notification)}
               {store.getState().notification.message ?
                 <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}
               <div>
                 <h1>Blog app</h1>
                 {store.getState().notification.message ? <Notification message={store.getState().notification.message} msgColor={store.getState().notification.messageColor} /> : <></>}
               </div>
-              <Route exact path="/" render={() => <Blogs store={store} setVisibility={setVisibility} visible={visible} blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm} />} />
               <Route exact path="/blogs"  render={() => <Blogs store={store} setVisibility={setVisibility} visible={visible} blog={blog} onChange={onChange} onClick={onClick} showOrHideForm={showOrHideForm} />} />
               <Route path="/blogs/:id" render={({ match }) => {
                 return <Blog

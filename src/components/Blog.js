@@ -9,6 +9,8 @@ let Blog = ({ blog, user, store }) => {
 
   const incrementLikes = async () => {
     store.dispatch(await addLikesToBlog(blog))
+    store.dispatch(showNotification(`You liked: ${blog.title}`, 'green', 'success'))
+    setTimeout(() => store.dispatch(showNotification('', '', '')), 2000)
   }
 
   const addComment = async() => {

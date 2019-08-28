@@ -70,10 +70,16 @@ const reducer = (state = { blogs: [], users: [], user: null, notification: notif
     return { ...state, blogs: blogs }
   }
   case 'ADD_NEW_BLOG'       : {
+    if (action.data.hasOwnProperty('error')) {
+      const notification = { message: action.data.error, messageColor: 'red', status: 'failure' }
+      return { ...state, notification }
+    }
     const newState = { ...state, blogs: sortBlogsByLikes(state.blogs.concat(action.data)) }
+    console.log('State in blogsReducer.js: ', newState)
     const newUser = newState.users.find(user => user.username === state.user.username)
     newUser.blogs = newUser.blogs.concat(action.data)
-    return newState
+    const notification = { message: `Successfully created blog: ${action.data.title}`, messageColor: 'green', status: 'success' }
+    return { ...newState, notification }
   }
   case 'REMOVE_BLOG'        : {
     const newState = { ...state, blogs: sortBlogsByLikes(state.blogs.filter(blog => blog.id !== action.data.id)) }
