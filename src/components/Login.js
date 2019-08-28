@@ -1,11 +1,11 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { useField } from '../hooks/index'
 import loginService from '../services/login'
 import { setLoggedInUser, showNotification } from '../reducers/blogsReducer'
-import { Button } from 'semantic-ui-react'
+import { Button, Message } from 'semantic-ui-react'
 
-const Login = ({ store }) => {
+const Login = ({ store, history }) => {
   const username = useField('text')
   const password = useField('password')
   let usernameRef = React.createRef()
@@ -22,6 +22,7 @@ const Login = ({ store }) => {
           window.localStorage.setItem('user', JSON.stringify(response))
           store.dispatch(setLoggedInUser(response))
           console.log('State in Login.js: ', store.getState())
+          history.push('/blogs')
         }
         else {
           store.dispatch(showNotification(response.error + '! please try again.', 'red', 'negative'))
@@ -36,6 +37,8 @@ const Login = ({ store }) => {
     <div>
       <div>
         <h1>Log in to App</h1>
+        {store.getState().notification.message ?
+          <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}
         <form className="ui form" name="login-form" onSubmit={handleLogin}>
           <div className="field">
             <label>Username:</label>
@@ -55,4 +58,4 @@ const Login = ({ store }) => {
   )
 }
 
-export default Login
+export default withRouter(Login)

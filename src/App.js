@@ -21,13 +21,13 @@ export default function App({ store }) {
   const [ visible, setVisible ] = useState(true)
 
   useEffect( () => {
-    console.log('In useEffect of App.js...')
+    // console.log('In useEffect of App.js...')
     async function fetchBlogsAndUsers() {
       store.dispatch(await displayAllBlogs())
       store.dispatch(await displayAllUsers())
     }
     fetchBlogsAndUsers()
-  }, [])
+  }, [store])
 
   const blog = { title, author, url }
 
@@ -77,8 +77,6 @@ export default function App({ store }) {
         <div className="App">
           {!window.localStorage.getItem('user') ?
             <div>
-              {store.getState().notification.message ?
-                <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}
               <Route exact path="/" render={() => <Login store={store}  /> } />
               <Route path="/signup" render={() => <Signup store={store} /> } />
               <Redirect to="/" />
@@ -92,7 +90,6 @@ export default function App({ store }) {
                   <button className="ui button" onClick={handleLogout}>Logout</button>
                 </Menu.Item>
               </Menu>
-              <Redirect to='/blogs' />
               {console.log('Notification: ', store.getState().notification)}
               {store.getState().notification.message ?
                 <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}

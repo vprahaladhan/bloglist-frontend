@@ -2,8 +2,8 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { useField } from '../hooks/index'
 import usersService from '../services/users'
-import { setLoggedInUser, showNotification } from '../reducers/blogsReducer'
-import { Button, Menu } from 'semantic-ui-react'
+import { showNotification } from '../reducers/blogsReducer'
+import { Button, Menu, Message } from 'semantic-ui-react'
 
 const Signup = ({ store }) => {
   const username = useField('text')
@@ -46,8 +46,10 @@ const Signup = ({ store }) => {
         <Menu>
           <Menu.Item><Link to='/'>login</Link></Menu.Item>
         </Menu>
-
         <h1>Register</h1>
+        {store.getState().notification.message ?
+          <Message color={store.getState().notification.messageColor}>{store.getState().notification.message}</Message> : <></>}
+
         <form className="ui form" name="login-form" onSubmit={registerUser}>
           <div className="field">
             <label>Username:</label>
