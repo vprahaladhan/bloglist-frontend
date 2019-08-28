@@ -42,7 +42,7 @@ const Login = ({ store, history }) => {
         <form className="ui form" name="login-form" onSubmit={handleLogin}>
           <div className="field">
             <label>Username:</label>
-            <input ref={usernameRef} id='username' {...{ ...username, reset: undefined }} />
+            <input ref={usernameRef} id='username' autoFocus {...{ ...username, reset: undefined }} />
           </div>
           <div className="field">
             <label>Password:</label>

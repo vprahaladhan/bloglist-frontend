@@ -53,7 +53,7 @@ const Signup = ({ store }) => {
         <form className="ui form" name="login-form" onSubmit={registerUser}>
           <div className="field">
             <label>Username:</label>
-            <input ref={usernameRef} id='username' {...{ ...username, reset: undefined }} />
+            <input ref={usernameRef} id='username' autoFocus {...{ ...username, reset: undefined }} />
           </div>
           <div className="field">
             <label>Full Name:</label>
